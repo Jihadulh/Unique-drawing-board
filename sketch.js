@@ -1,8 +1,9 @@
 // Global variables that will store the toolbox colour palette
 // and the helper functions.
-var toolbox = null;
-var colourP = null;
-var helpers = null;
+var toolbox;
+var colourP;
+var helpers;
+var canvasContainer;
 
 function setup() {
 	//create a canvas to fill the content div from index.html
@@ -21,12 +22,18 @@ function setup() {
 	toolbox.addTool(new FreehandTool());
 	toolbox.addTool(new LineToTool());
 	toolbox.addTool(new SprayCanTool());
-	toolbox.addTool(new mirrorDrawTool());
+	toolbox.addTool(new MirrorDrawTool());
 	toolbox.addTool(new SquareTool());
 	toolbox.addTool(new CircleTool());
 	toolbox.addTool(new TriangleTool());
 	toolbox.addTool(new RectangleTool());
 	background(255);
+}
+
+function windowResized() {
+    // Resize canvas to fill the content area
+    resizeCanvas(canvasContainer.size().width, canvasContainer.size().height);
+    background(255);
 }
 
 function draw() {
