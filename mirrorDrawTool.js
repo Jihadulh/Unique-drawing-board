@@ -2,6 +2,7 @@ function MirrorDrawTool() {
 	// Tool properties
 	this.icon = "assets/mirror.jpg";
 	this.name = "mirrorDraw";
+	this.strokeWeight = 1;
 
 	// Track mouse position for continuous drawing
 	var previousMouseX = -1;
@@ -9,18 +10,38 @@ function MirrorDrawTool() {
 
 	// Draw mirrored lines as the mouse moves
 	this.draw = function() {
+		// Draw the line of symmetry
+		stroke(0, 0, 255, 100); // Semi-transparent blue
+		strokeWeight(2);
+		if (this.axis === "x") {
+			line(this.lineOfSymmetry, 0, this.lineOfSymmetry, height);
+		} else {
+			line(0, this.lineOfSymmetry, width, this.lineOfSymmetry);
+		}
+
+		// Reset stroke for drawing
+		stroke(colourP.selectedColour);
+		strokeWeight(this.strokeWeight);
+
 		if (mouseIsPressed) {
 			// Start drawing at current mouse position
 			if (previousMouseX == -1) {
 				previousMouseX = mouseX;
 				previousMouseY = mouseY;
 			}
-			// Draw lines on both sides of the canvas
+			// Draw lines on both sides of the symmetry line
 			else {
-				// Draw on the left side
+				// Draw on the original side
 				line(previousMouseX, previousMouseY, mouseX, mouseY);
-				// Draw on the right side (mirrored)
-				line(width - previousMouseX, previousMouseY, width - mouseX, mouseY);
+				
+				// Calculate and draw on the mirrored side
+				var oppositeX = this.calculateOpposite(mouseX, "x");
+				var oppositeY = this.calculateOpposite(mouseY, "y");
+				var previousOppositeX = this.calculateOpposite(previousMouseX, "x");
+				var previousOppositeY = this.calculateOpposite(previousMouseY, "y");
+				
+				line(previousOppositeX, previousOppositeY, oppositeX, oppositeY);
+				
 				previousMouseX = mouseX;
 				previousMouseY = mouseY;
 			}
@@ -39,10 +60,6 @@ function MirrorDrawTool() {
 
 	var self = this;
 
-	//mouse coordinates for the other side of the Line of symmetry
-	var previousOppositeMouseX = -1;
-	var previousOppositeMouseY = -1;
-
 	/*calculate an opposite coordinate the other side of the
 	 *symmetry line.
 	 *@param n number: location for either x or y coordinate
@@ -56,7 +73,7 @@ function MirrorDrawTool() {
 			return n;
 		}
 
-		//if n is less than the line of symmetry return a coorindate
+		//if n is less than the line of symmetry return a coordinate
 		//that is far greater than the line of symmetry by the distance from
 		//n to that line.
 		if (n < this.lineOfSymmetry) {
@@ -79,7 +96,7 @@ function MirrorDrawTool() {
 	};
 
 	//adds a button and click handler to the options area. When clicked
-	//toggle the line of symmetry between horizonatl to vertical
+	//toggle the line of symmetry between horizontal to vertical
 	this.populateOptions = function() {
 		select(".options").html(
 			"<button id='directionButton'>Make Horizontal</button>");
